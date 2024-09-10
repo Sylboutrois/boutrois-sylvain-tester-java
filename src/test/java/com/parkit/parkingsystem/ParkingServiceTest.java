@@ -13,7 +13,7 @@ import com.parkit.parkingsystem.util.InputReaderUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-
+import org.junit.jupiter.api.function.Executable;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -22,6 +22,7 @@ import java.util.Date;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.Mockito.*;
 
@@ -94,8 +95,22 @@ public class ParkingServiceTest {
 		verify(inputReaderUtil, Mockito.times(1)).readSelection();
 		verify(parkingSpotDAO, Mockito.times(1)).getNextAvailableSlot(any(ParkingType.class));
 	};
+/*	@Test
 
-	@Test
+	public void testGetNextParkingNumberIfAvailableException() {
+		// Arrange: Configuration des mocks nécessaires
+		when(inputReaderUtil.readSelection()).thenReturn();
+		when(parkingSpotDAO.getNextAvailableSlot(any(ParkingType.class))).thenReturn();
+		
+		// Act: Appel de la méthode sous test
+		
+		// Assert: Vérification des interactions avec les mocks
+		 assertThrows(Exception.class, () -> {
+	            parkingService.getNextParkingNumberIfAvailable();
+	        });}
+	*/
+
+@Test
 	public void testProcessIncomingVehicle() {
 	    try {
 	        // Arrange: Configuration des mocks nécessaires
@@ -103,7 +118,7 @@ public class ParkingServiceTest {
 	        when(inputReaderUtil.readVehicleRegistrationNumber()).thenReturn("ABCDEF"); // Simule l'entrée du numéro d'immatriculation du véhicule
 	        when(parkingSpotDAO.getNextAvailableSlot(any(ParkingType.class))).thenReturn(1); // Simule la disponibilité d'un emplacement de stationnement
 	        when(parkingSpotDAO.updateParking(any(ParkingSpot.class))).thenReturn(true); // Simule la mise à jour de l'emplacement de stationnement
-	        when(ticketDAO.getNbTicket(anyString())).thenReturn(0); // Simule que l'utilisateur est un utilisateur pour la première fois
+	        when(ticketDAO.getNbTicket(anyString())).thenReturn(1); // Simule que l'utilisateur est un utilisateur pour la première fois
 
 	        // Act: Appel de la méthode sous test
 	        parkingService.processIncomingVehicle();
@@ -157,6 +172,20 @@ public class ParkingServiceTest {
 
 	    // Assert: Vérification des résultats et des interactions
 	    assertNull(parkingSpot, "ParkingSpot doit être nul si aucune place n'est disponible"); // Vérifie que la méthode renvoie null lorsque aucune place n'est disponible
+	    verify(inputReaderUtil, times(1)).readSelection(); // Vérifie que readSelection() est appelé une fois
+	    verify(parkingSpotDAO, times(1)).getNextAvailableSlot(any(ParkingType.class)); // Vérifie que getNextAvailableSlot() est appelé une fois
+	}
+	@Test
+	public void testGetNextParkingNumberIfAvailableParkingNumberFound() {
+	    // Arrange: Configuration des mocks nécessaires
+	    when(inputReaderUtil.readSelection()).thenReturn(1); // Simule la sélection de l'utilisateur pour le type de véhicule (1 pour CAR)
+	    when(parkingSpotDAO.getNextAvailableSlot(any(ParkingType.class))).thenReturn(1); // Simule l'absence de place de stationnement disponible
+
+	    // Act: Appel de la méthode sous test
+	    ParkingSpot parkingSpot = parkingService.getNextParkingNumberIfAvailable();
+
+	    // Assert: Vérification des résultats et des interactions
+	    //assertNull(parkingSpot, "ParkingSpot doit être nul si aucune place n'est disponible"); // Vérifie que la méthode renvoie null lorsque aucune place n'est disponible
 	    verify(inputReaderUtil, times(1)).readSelection(); // Vérifie que readSelection() est appelé une fois
 	    verify(parkingSpotDAO, times(1)).getNextAvailableSlot(any(ParkingType.class)); // Vérifie que getNextAvailableSlot() est appelé une fois
 	}

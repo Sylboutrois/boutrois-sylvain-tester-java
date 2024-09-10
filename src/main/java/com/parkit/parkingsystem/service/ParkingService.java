@@ -34,7 +34,6 @@ public class ParkingService {
             if(parkingSpot !=null && parkingSpot.getId() > 0){
                 String vehicleRegNumber = getVehicleRegNumber();
                 int nbTickets = ticketDAO.getNbTicket(vehicleRegNumber);
-
                 if (nbTickets > 0) {
                     System.out.println("Heureux de vous revoir !");
                 }
@@ -129,4 +128,5 @@ public class ParkingService {
             logger.error("Unable to process exiting vehicle",e);
         }
     }
+   
 }
